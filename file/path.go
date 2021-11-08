@@ -8,7 +8,7 @@ import (
 )
 
 const SEP = "/"
-const SEP_CH = SEP[0]
+const SEP_CH = '/'
 
 func JoinPath(paths ...string)(allpath string){
 	allpath = ""
@@ -47,7 +47,7 @@ func SplitPaths(path string)(paths []string){
 		return []string{}
 	}
 	paths = strings.Split(path, SEP)
-	if IsAbsPath(path[0]) {
+	if IsAbsPath(path) {
 		paths[0] = SEP
 	}
 	if path[len(path) - 1] == SEP_CH {

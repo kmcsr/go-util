@@ -141,11 +141,11 @@ type WalkFunc func(e *WalkEnity, err error)(error)
 
 func walkDir(root string, path string, call WalkFunc)(err error){
 	base := JoinPath(root, path)
-	list, err = os.ReadDir(base)
+	list, err := os.ReadDir(base)
 	if err != nil { return }
 	for _, f := range list {
 		if f.IsDir(){
-			err = walk(root, JoinPath(path, f.Name()), call)
+			err = walkDir(root, JoinPath(path, f.Name()), call)
 		}else{
 			p := JoinPath(root, path)
 			rinfo, err := os.Lstat(p)
@@ -178,5 +178,6 @@ func Walk(root string, call WalkFunc)(err error){
 	if rinfo.IsDir(){
 		return walkDir(root, "", call)
 	}
+	return nil
 }
 
