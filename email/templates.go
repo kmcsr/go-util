@@ -7,7 +7,7 @@ import (
 	htmltemp "html/template"
 	ioutil "io/ioutil"
 
-	ufile "github.com/KpnmServer/go-util/file"
+	filex "github.com/kmcsr/go-util/file"
 )
 
 var (
@@ -37,7 +37,7 @@ func ExeHtmlTemp(path string, _value... interface{})(text string, err error){
 func LoadTemplateDir(dirpath string){
 	{ // load mail template files
 		var templateFiles []string = make([]string, 0)
-		basePath := ufile.AbsPath(dirpath)
+		basePath := filex.AbsPath(dirpath)
 		var findFunc func(path string)
 		findFunc = func(path string){
 			finfos, err := ioutil.ReadDir(path)
@@ -45,7 +45,7 @@ func LoadTemplateDir(dirpath string){
 				panic(err)
 			}
 			for _, info := range finfos {
-				fpath := ufile.JoinPath(path, info.Name())
+				fpath := filex.JoinPath(path, info.Name())
 				if info.IsDir() {
 					findFunc(fpath)
 				}else{

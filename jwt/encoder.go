@@ -5,7 +5,7 @@ import (
 	strings "strings"
 	time    "time"
 
-	ujson "github.com/kmcsr/go-util/json"
+	jsonx "github.com/kmcsr/go-util/json"
 )
 
 type Json = map[string]interface{}
@@ -61,7 +61,7 @@ func (cdr *default_encoder)Encode(json Json)(token string){
 		return ""
 	}
 	head := b64RmTail(encodeB64Url(([]byte)(`{"alg":"HS256","typ":"JWT"}`)))
-	fdata := head + "." + b64RmTail(encodeB64Url(ujson.EncodeJson(json)))
+	fdata := head + "." + b64RmTail(encodeB64Url(jsonx.EncodeJson(json)))
 	code := b64RmTail(encodeB64Url(hmacSha256(([]byte)(fdata), cdr.key)))
 	token += fdata + "." + code
 	return token
@@ -96,7 +96,7 @@ func (cdr *default_encoder)Decode(token string)(json Json, err error){
 	if err != nil {
 		return nil, err
 	}
-	err = ujson.DecodeJson(data, &json)
+	err = jsonx.DecodeJson(data, &json)
 	if err != nil {
 		return nil, err
 	}
