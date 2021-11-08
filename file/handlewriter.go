@@ -1,5 +1,5 @@
 
-package kweb_util_file
+package util_file
 
 type HandleWriter func([]byte)(int, error)
 

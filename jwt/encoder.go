@@ -5,7 +5,7 @@ import (
 	strings "strings"
 	time    "time"
 
-	ujson "github.com/KpnmServer/go-util/json"
+	ujson "github.com/kmcsr/go-util/json"
 )
 
 type Json = map[string]interface{}

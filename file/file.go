@@ -1,5 +1,5 @@
 
-package kweb_util_file
+package util_file
 
 import (
 	os "os"
@@ -26,11 +26,6 @@ func IsDir(path string)(bool){
 	return s != nil && s.IsDir()
 }
 
-func RemoveFile(path string)(bool){
-	err := os.Remove(path)
-	return err == nil
-}
-
 func CreateDir(folderPath string, mode_ ...os.FileMode)(err error){
 	mode := os.ModePerm
 	if len(mode_) > 0 {
@@ -45,7 +40,7 @@ func CreateDir(folderPath string, mode_ ...os.FileMode)(err error){
 	return nil
 }
 
-func CopyFile(src string, drt string)(err error){
+func CopyFile(src string, drt string)(written int64, err error){
 	var (
 		sfd *os.File
 		dfd *os.File
@@ -59,7 +54,7 @@ func CopyFile(src string, drt string)(err error){
 	if err != nil { return }
 	defer dfd.Close()
 
-	_, err = io.Copy(sfd, dfd)
+	written, err = io.Copy(sfd, dfd)
 	if err != nil { return }
 
 	info, err = sfd.Stat()
@@ -99,10 +94,89 @@ func CopyDir(src string, drt string)(err error){
 		if info.IsDir() {
 			err = CopyDir(df, df)
 		}else{
-			err = CopyFile(sf, df)
+			_, err = CopyFile(sf, df)
 		}
 		if err != nil { return }
 	}
 	return nil
+}
+
+type WalkEnity struct{
+	root string
+	path string
+	full string
+	parent string
+	info os.FileInfo
+}
+
+func (e *WalkEnity)Root()(string){
+	return e.root
+}
+
+func (e *WalkEnity)Path()(string){
+	return e.path
+}
+
+func (e *WalkEnity)FullPath()(string){
+	return e.full
+}
+
+func (e *WalkEnity)ParentPath()(string){
+	return e.parent
+}
+
+func (e *WalkEnity)Name()(string){
+	return e.info.Name()
+}
+
+func (e *WalkEnity)IsDir()(bool){
+	return e.info.IsDir()
+}
+
+func (e *WalkEnity)Info()(os.FileInfo){
+	return e.info
+}
+
+type WalkFunc func(e *WalkEnity, err error)(error)
+
+func walkDir(root string, path string, call WalkFunc)(err error){
+	base := JoinPath(root, path)
+	list, err = os.ReadDir(base)
+	if err != nil { return }
+	for _, f := range list {
+		if f.IsDir(){
+			err = walk(root, JoinPath(path, f.Name()), call)
+		}else{
+			p := JoinPath(root, path)
+			rinfo, err := os.Lstat(p)
+			err = call(&WalkEnity{
+				root: root,
+				path: path,
+				full: p,
+				parent: base,
+				info: rinfo,
+			}, err)
+		}
+		if err != nil { return }
+	}
+	return
+}
+
+func Walk(root string, call WalkFunc)(err error){
+	rinfo, err := os.Lstat(root)
+	if err != nil {
+		return
+	}
+	err = call(&WalkEnity{
+		root: root,
+		path: "",
+		parent: "",
+		full: root,
+		info: rinfo,
+	}, nil)
+	if err != nil { return }
+	if rinfo.IsDir(){
+		return walkDir(root, "", call)
+	}
 }
 

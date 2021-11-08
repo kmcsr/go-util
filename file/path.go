@@ -1,10 +1,14 @@
 
-package kweb_util_file
+package util_file
 
 import (
 	os "os"
 	strings "strings"
+	opath "path/filepath"
 )
+
+const SEP = "/"
+const SEP_CH = SEP[0]
 
 func JoinPath(paths ...string)(allpath string){
 	allpath = ""
@@ -12,12 +16,12 @@ func JoinPath(paths ...string)(allpath string){
 		if len(p) == 0 {
 			continue
 		}
-		if p[0] == '/' {
+		if IsAbsPath(p) {
 			allpath = p
 			continue
 		}
-		if len(allpath) != 0 && allpath[len(allpath) - 1] != '/' {
-			allpath += "/"
+		if len(allpath) != 0 && allpath[len(allpath) - 1] != SEP_CH {
+			allpath += SEP
 		}
 		allpath += p
 	}
@@ -30,8 +34,8 @@ func JoinPathWithoutAbs(paths ...string)(allpath string){
 		if len(p) == 0 {
 			continue
 		}
-		if len(allpath) != 0 && allpath[len(allpath) - 1] != '/' && p[0] != '/' {
-			allpath += "/"
+		if len(allpath) != 0 && allpath[len(allpath) - 1] != SEP_CH && p[0] != SEP_CH {
+			allpath += SEP
 		}
 		allpath += p
 	}
@@ -42,11 +46,11 @@ func SplitPaths(path string)(paths []string){
 	if len(path) == 0 {
 		return []string{}
 	}
-	paths = strings.Split(path, "/")
-	if path[0] == '/' {
-		paths[0] = "/"
+	paths = strings.Split(path, SEP)
+	if IsAbsPath(path[0]) {
+		paths[0] = SEP
 	}
-	if path[len(path) - 1] == '/' {
+	if path[len(path) - 1] == SEP_CH {
 		paths = paths[:len(paths) - 1]
 	}
 	return
@@ -80,8 +84,8 @@ func FixPath(path string)(string){
 		}
 	}
 	if i <= 0 {
-		if path[0] == '/' {
-			return "/"
+		if path[0] == SEP_CH {
+			return SEP
 		}
 		if i == 0 {
 			return "."
@@ -95,8 +99,12 @@ func FixPath(path string)(string){
 	return JoinPath(paths[:i]...)
 }
 
+func IsAbsPath(path string)(bool){
+	return opath.IsAbs(path)
+}
+
 func AbsPath(path string)(string){
-	if path[0] == '/' {
+	if IsAbsPath(path) {
 		return path
 	}
 	return JoinPath(RunPath(), path)
@@ -125,10 +133,13 @@ func RelPath(path string, base_ ...string)(string){
 	return JoinPath(append(backs, paths[x:]...)...)
 }
 
+func ReplacePath(path string, old, new string)(string){
+	return JoinPath(new, RelPath(path, old))
+}
 
 func SplitPath(path string)(dirn string, base string){
-	var i int
-	for i = len(path) - 1; i >= 0 && path[i] != '/' ;i-- {}
+	i := len(path) - 1
+	for ; i >= 0 && path[i] != '/' ;i-- {}
 	if i == -1 {
 		return "", path
 	}
@@ -146,12 +157,12 @@ func BasePath(path string)(base string){
 }
 
 func SplitName(path string)(base string, suffix string){
-	var i int
-	for i = len(path) - 1; i >= 0 && path[i] != '.' ;i-- {}
+	l, i := len(DirPath(path)), len(path) - 1
+	for ; i >= l && path[i] != SEP_CH ;i-- {}
 	if i == -1 {
 		return path, ""
 	}
-	return path[:i], path[i + 1:]
+	return path[:i], path[i:]
 }
 
 func BaseName(path string)(base string){
@@ -163,3 +174,33 @@ func SuffixName(path string)(suffix string){
 	_, suffix = SplitName(path)
 	return
 }
+
+func SplitNameL(path string)(base string, suffix string){
+	l, i := len(path), len(DirPath(path))
+	for ; i < l && path[i] != '.' ;i++ {}
+	if i == l {
+		return path, ""
+	}
+	return path[:i], path[i:]
+}
+
+func BaseNameL(path string)(base string){
+	base, _ = SplitNameL(path)
+	return
+}
+
+func SuffixNameL(path string)(suffix string){
+	_, suffix = SplitNameL(path)
+	return
+}
+
+func HasSuffix(path string, suffixs ...string)(bool){
+	snl := SuffixNameL(path)
+	for _, s := range suffixs {
+		if strings.HasSuffix(snl, s) {
+			return true
+		}
+	}
+	return false
+}
+
