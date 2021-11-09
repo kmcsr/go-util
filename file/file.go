@@ -140,12 +140,12 @@ func (e *WalkEnity)Info()(os.FileInfo){
 type WalkFunc func(e *WalkEnity, err error)(error)
 
 func walkDir(root string, path string, call WalkFunc)(err error){
-	base := filex.JoinPath(root, path)
+	base := JoinPath(root, path)
 	list, err := os.ReadDir(base)
 	if err != nil { return }
 	var rinfo os.FileInfo
 	for _, f := range list {
-		p := filex.JoinPath(base, f.Name())
+		p := JoinPath(base, f.Name())
 		rinfo, err = os.Lstat(p)
 		err = call(&WalkEnity{
 			root: root,
@@ -156,7 +156,7 @@ func walkDir(root string, path string, call WalkFunc)(err error){
 		}, err)
 		if err != nil { return }
 		if f.IsDir(){
-			err = walkDir(root, filex.JoinPath(path, f.Name()), call)
+			err = walkDir(root, JoinPath(path, f.Name()), call)
 			if err != nil { return }
 		}
 	}
