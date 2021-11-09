@@ -145,18 +145,18 @@ func walkDir(root string, path string, call WalkFunc)(err error){
 	if err != nil { return }
 	var rinfo os.FileInfo
 	for _, f := range list {
-		p := JoinPath(base, f.Name())
+		p, p2 := JoinPath(base, f.Name()), JoinPath(path, f.Name())
 		rinfo, err = os.Lstat(p)
 		err = call(&WalkEnity{
 			root: root,
-			path: path,
+			path: p2,
 			full: p,
-			parent: base,
+			parent: path,
 			info: rinfo,
 		}, err)
 		if err != nil { return }
 		if f.IsDir(){
-			err = walkDir(root, JoinPath(path, f.Name()), call)
+			err = walkDir(root, p2, call)
 			if err != nil { return }
 		}
 	}
