@@ -54,7 +54,7 @@ func CopyFile(src string, drt string)(written int64, err error){
 	if err != nil { return }
 	defer dfd.Close()
 
-	written, err = io.Copy(sfd, dfd)
+	written, err = io.Copy(dfd, sfd)
 	if err != nil { return }
 
 	info, err = sfd.Stat()
