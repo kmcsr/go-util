@@ -34,9 +34,9 @@ func CreateDir(folderPath string, mode_ ...os.FileMode)(err error){
 	if IsNotExist(folderPath){
 		err = os.Mkdir(folderPath, os.ModePerm)
 		if err != nil { return }
-		err = os.Chmod(folderPath, mode)
-		if err != nil { return }
 	}
+	err = os.Chmod(folderPath, mode)
+	if err != nil { return }
 	return nil
 }
 
