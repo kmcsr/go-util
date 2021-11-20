@@ -26,12 +26,16 @@ func IsDir(path string)(bool){
 	return s != nil && s.IsDir()
 }
 
-func CreateDir(folderPath string, mode_ ...os.FileMode)(err error){
+func MakeDir(folderPath string, mode_ ...os.FileMode)(err error){
 	mode := os.ModePerm
 	if len(mode_) > 0 {
 		mode = mode_[0]
 	}
 	if IsNotExist(folderPath){
+		if ff := DirPath(folderPath); IsNotExist(ff) {
+			err = MakeDir(ff, mode)
+			if err != nil { return }
+		}
 		err = os.Mkdir(folderPath, os.ModePerm)
 		if err != nil { return }
 	}
