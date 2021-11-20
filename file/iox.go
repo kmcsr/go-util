@@ -67,7 +67,7 @@ func (w *WrapWriter)Close()(err error){
 
 type WrapReader struct{
 	R io.Reader
-	rc WrapWriteHandle
+	rc WrapReadHandle
 	cc WrapReaderCloseHandle
 }
 
@@ -85,7 +85,7 @@ func NewWrapReader(reader io.Reader, rc WrapReadHandle, _cc ...WrapReaderCloseHa
 
 func (r *WrapReader)Read(src []byte)(n int, err error){
 	if r.rc != nil {
-		src, err = r.wc(r, src)
+		src, err = r.rc(r, src)
 		if err != nil { return }
 	}
 	return r.R.Read(src)

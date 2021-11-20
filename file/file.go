@@ -81,7 +81,7 @@ func CopyDir(src string, drt string)(err error){
 	dirinfo, err = sfd.Stat()
 	if err != nil { return }
 
-	err = CreateDir(drt, dirinfo.Mode())
+	err = MakeDir(drt, dirinfo.Mode())
 	if err != nil { return }
 	defer func(){ if err != nil {
 		os.RemoveAll(drt)
