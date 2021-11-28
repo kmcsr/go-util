@@ -48,20 +48,21 @@ func CopyFile(src string, drt string)(written int64, err error){
 	var (
 		sfd *os.File
 		dfd *os.File
-		info os.FileInfo
+		mode os.FileMode = os.ModePerm
 	)
 	sfd, err = os.Open(src)
 	if err != nil { return }
 	defer sfd.Close()
 
-	dfd, err = os.Create(drt)
+	if info, err := sfd.Stat(); err == nil {
+		mode = info.Mode()
+	}
+
+	dfd, err = os.OpenFile(name, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, mode)
 	if err != nil { return }
 	defer dfd.Close()
 
 	written, err = io.Copy(dfd, sfd)
-	if err != nil { return }
-
-	info, err = sfd.Stat()
 	if err != nil { return }
 
 	err = dfd.Chmod(info.Mode())

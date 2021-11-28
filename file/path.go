@@ -139,7 +139,7 @@ func ReplacePath(path string, old, new string)(string){
 
 func SplitPath(path string)(dirn string, base string){
 	i := len(path) - 1
-	for ; i >= 0 && path[i] != '/' ;i-- {}
+	for ; i >= 0 && path[i] != SEP_CH ;i-- {}
 	if i == -1 {
 		return "", path
 	}
@@ -158,7 +158,7 @@ func BasePath(path string)(base string){
 
 func SplitName(path string)(base string, suffix string){
 	l, i := len(DirPath(path)), len(path) - 1
-	for ; i >= l && path[i] != SEP_CH ;i-- {}
+	for ; i >= l && path[i] != '.' ;i-- {}
 	if i == -1 {
 		return path, ""
 	}
