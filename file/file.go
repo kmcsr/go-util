@@ -58,14 +58,13 @@ func CopyFile(src string, drt string)(written int64, err error){
 		mode = info.Mode()
 	}
 
-	dfd, err = os.OpenFile(name, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, mode)
+	dfd, err = os.OpenFile(drt, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, mode)
 	if err != nil { return }
 	defer dfd.Close()
 
 	written, err = io.Copy(dfd, sfd)
 	if err != nil { return }
 
-	err = dfd.Chmod(info.Mode())
 	return
 }
 
