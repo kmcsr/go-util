@@ -32,7 +32,7 @@ func ReadJsonArr(r io.Reader)(arr JsonArr, err error){
 }
 
 func (arr JsonArr)Append(ins ...interface{})(JsonArr){
-	return arr = append(arr, ins...)
+	return append(arr, ins...)
 }
 
 func (arr JsonArr)Insert(ind int, ins ...interface{})(JsonArr){
@@ -270,7 +270,7 @@ func (arr JsonArr)GetStringsOk(ind int)(v []string, ok bool){
 	return
 }
 
-func (arr JsonArr)GetArrays(ind int)(v []JsonArr, ok bool){
+func (arr JsonArr)GetArraysOk(ind int)(v []JsonArr, ok bool){
 	a, ok := arr.GetArrayOk(ind)
 	if !ok { return }
 	v = make([]JsonArr, a.Len())
@@ -304,7 +304,7 @@ func (arr JsonArr)GetObjsOk(ind int)(v []JsonObj, ok bool){
 	return
 }
 
-func (arr JsonArr)GetStringMap(ind int)(v map[string]string, ok bool){
+func (arr JsonArr)GetStringMapOk(ind int)(v map[string]string, ok bool){
 	v, ok = arr[ind].(map[string]string)
 	if ok { return }
 	v0, ok := arr.GetObjOk(ind)

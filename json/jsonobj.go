@@ -42,10 +42,8 @@ func (obj JsonObj)Set(key string, v interface{})(JsonObj){
 }
 
 func (obj JsonObj)GetOk(key string)(v interface{}, ok bool){
-	if ind >= obj.Len() {
-		return nil, false
-	}
-	return obj[key], true
+	v, ok = obj[key]
+	return
 }
 
 func (obj JsonObj)GetDefault(key string, d interface{})(v interface{}){
@@ -199,7 +197,7 @@ func (obj JsonObj)GetStringsOk(key string)(v []string, ok bool){
 	return
 }
 
-func (obj JsonObj)GetArrays(key string)(v []JsonArr, ok bool){
+func (obj JsonObj)GetArraysOk(key string)(v []JsonArr, ok bool){
 	a, ok := obj.GetArrayOk(key)
 	if !ok { return }
 	v = make([]JsonArr, a.Len())
@@ -229,7 +227,7 @@ func (obj JsonObj)GetObjsOk(key string)(v []JsonObj, ok bool){
 	return
 }
 
-func (obj JsonObj)GetStringMap(key string)(v map[string]string, ok bool){
+func (obj JsonObj)GetStringMapOk(key string)(v map[string]string, ok bool){
 	v, ok = obj[key].(map[string]string)
 	if ok { return }
 	v0, ok := obj.GetObjOk(key)
