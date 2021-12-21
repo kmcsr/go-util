@@ -36,6 +36,11 @@ func (obj JsonObj)Has(key string)(ok bool){
 	return
 }
 
+func (obj JsonObj)Set(key string, v interface{})(JsonObj){
+	obj[key] = v
+	return obj
+}
+
 func (obj JsonObj)GetOk(key string)(v interface{}, ok bool){
 	if ind >= obj.Len() {
 		return nil, false

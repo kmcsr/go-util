@@ -43,6 +43,11 @@ func (arr JsonArr)Delete(ind int)(JsonArr){
 	return append(arr[0:ind], arr[ind + 1:len(arr)]...)
 }
 
+func (arr JsonArr)Set(ind int, v interface{})(JsonArr){
+	arr[ind] = v
+	return arr
+}
+
 func (arr JsonArr)GetOk(ind int)(v interface{}, ok bool){
 	if ind >= arr.Len() {
 		return nil, false
